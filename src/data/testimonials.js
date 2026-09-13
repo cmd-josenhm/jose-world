@@ -1,8 +1,8 @@
 const testimonials = [
   {
     id: 1,
-    name: "Client à venir",
-    role: "Entreprise / Fonction",
+    name: "Jeremy Zokpodo",
+    role: "Technicien BTP",
     message:
       "José a parfaitement compris notre besoin et a proposé une solution professionnelle, moderne et efficace.",
     rating: 5,
@@ -10,20 +10,20 @@ const testimonials = [
 
   {
     id: 2,
-    name: "Client à venir",
-    role: "Entreprise / Fonction",
+    name: "Claudiane Metondinou",
+    role: "CSS au ministère de la santé",
     message:
-      "Une collaboration fluide, une vraie attention aux détails et un résultat à la hauteur de nos attentes.",
+      "Une collaboration fluide, Mon portfolio réponds aux normes gouvernementamle.",
     rating: 5,
   },
 
   {
     id: 3,
-    name: "Client à venir",
-    role: "Entreprise / Fonction",
+    name: "Vous",
+    role: "Votre projet",
     message:
-      "Le travail était soigné, créatif et surtout pensé pour répondre à nos objectifs.",
-    rating: 5,
+      "Vous serez le prochain client à temoigner.",
+    rating: 1,
   },
 ];
 

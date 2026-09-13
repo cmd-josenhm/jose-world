@@ -151,3 +151,104 @@ video {
     transform: translateY(-3px);
   }
 }
+@keyframes characterFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.firework {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background: #1e88e5;
+  opacity: 0;
+  animation: fireworkBurst 0.8s ease-out forwards;
+}
+
+.spark-1 {
+  --x: -70px;
+  --y: -40px;
+}
+
+.spark-2 {
+  --x: -50px;
+  --y: -70px;
+}
+
+.spark-3 {
+  --x: -15px;
+  --y: -90px;
+}
+
+.spark-4 {
+  --x: 30px;
+  --y: -75px;
+}
+
+.spark-5 {
+  --x: 70px;
+  --y: -35px;
+}
+
+.spark-6 {
+  --x: 80px;
+  --y: 20px;
+}
+
+.spark-7 {
+  --x: 35px;
+  --y: 65px;
+}
+
+.spark-8 {
+  --x: -20px;
+  --y: 75px;
+}
+
+.spark-9 {
+  --x: -65px;
+  --y: 40px;
+}
+
+.spark-10 {
+  --x: -85px;
+  --y: -5px;
+}
+
+@keyframes fireworkBurst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(var(--x), var(--y)) scale(0.2);
+  }
+}
+@keyframes notificationIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px) translateX(-15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notification-in {
+    animation: none;
+  }
+}

@@ -122,20 +122,20 @@ function Hero() {
         <div className="hero-content max-w-5xl">
 
           <p className="hero-kicker mb-6 text-sm font-semibold uppercase tracking-[0.35em] text-[var(--accent)]">
-            Graphiste Designer · Concepteur Web
+            Graphiste Designer · Développeur Web
           </p>
 
           <h1 className="overflow-hidden text-5xl font-extrabold leading-[0.95] tracking-[-0.04em] sm:text-6xl md:text-8xl lg:text-[7.5rem]">
             <span className="hero-title-line block">
-              Je crée
+              Je donne 
             </span>
 
             <span className="hero-title-line block text-[var(--accent)]">
-              des expériences
+              vie 
             </span>
 
             <span className="hero-title-line block">
-              digitales.
+              à vos idées.
             </span>
           </h1>
 
@@ -203,7 +203,7 @@ function Hero() {
           <span className="hero-scroll-line block h-10 w-px bg-[var(--accent)]" />
 
           <span>
-            Scroll to explore
+            Défiler pour découvrir mes projets
           </span>
         </div>
       </div>

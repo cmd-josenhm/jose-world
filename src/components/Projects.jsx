@@ -157,8 +157,7 @@ function Projects({ onProjectSelect }) {
           </div>
 
           <p className="max-w-md text-sm leading-7 text-[var(--text-secondary)] md:text-right">
-            Une sélection de projets créatifs et digitaux conçus pour donner
-            vie aux idées.
+            Visiez mes projets récents.
           </p>
         </div>
 

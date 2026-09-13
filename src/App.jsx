@@ -14,6 +14,8 @@ import About from "./components/About";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
+import DiscoverBox from "./components/DiscoverBox";
+import LiveNotifications from "./components/LiveNotifications";
 
 function App() {
   const [darkMode, setDarkMode] = useState(true);
@@ -25,7 +27,10 @@ function App() {
   // ==========================================
 
   useEffect(() => {
-    document.documentElement.classList.toggle("light", !darkMode);
+    document.documentElement.classList.toggle(
+      "light",
+      !darkMode
+    );
   }, [darkMode]);
 
   // ==========================================
@@ -34,7 +39,19 @@ function App() {
 
   if (!showPortfolio) {
     return (
-      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--bg-primary)] px-6 text-[var(--text-primary)]">
+      <div
+        className="
+          relative
+          flex
+          min-h-screen
+          items-center
+          justify-center
+          overflow-hidden
+          bg-[var(--bg-primary)]
+          px-6
+          text-[var(--text-primary)]
+        "
+      >
         {/* Bouton thème */}
         <div className="absolute right-6 top-6 z-20">
           <ThemeToggle
@@ -43,80 +60,47 @@ function App() {
           />
         </div>
 
-        {/* Contenu */}
+        {/* Contenu de la couverture */}
         <main className="relative z-10 text-center">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-[var(--accent)]">
-            Welcome To My World!
-          </p>
-
-          <h1 className="text-5xl font-extrabold tracking-tight md:text-7xl">
-            Mon portfolio
-          </h1>
-
-          <p className="mx-auto mt-6 max-w-2xl text-[var(--text-secondary)]">
-            L’univers créatif de José Nahounmé.
-          </p>
-
-          {/* Bouton Découvrir */}
-          <button
-            type="button"
-            onClick={() => setShowPortfolio(true)}
+          <p
             className="
-              group
-              relative
-              mt-10
-              inline-flex
-              items-center
-              gap-4
-              overflow-hidden
-              rounded-full
-              border
-              border-[var(--accent)]
-              px-8
-              py-4
+              mb-4
               text-sm
               font-semibold
               uppercase
-              tracking-[0.2em]
-              text-[var(--text-primary)]
-              transition-all
-              duration-500
-              hover:scale-105
-              hover:bg-[var(--accent)]
-              hover:text-white
-              animate-[discoverPulse_3s_ease-in-out_infinite]
+              tracking-[0.3em]
+              text-[var(--accent)]
             "
           >
-            <span>Découvrir</span>
+            Welcome To My World!
+          </p>
 
-            <span
-              className="
-                text-lg
-                transition-transform
-                duration-500
-                group-hover:translate-x-1
-              "
-            >
-              →
-            </span>
+          <h1
+            className="
+              text-5xl
+              font-extrabold
+              tracking-tight
+              md:text-7xl
+            "
+          >
+            Mon portfolio
+          </h1>
 
-            {/* Reflet lumineux */}
-            <span
-              className="
-                pointer-events-none
-                absolute
-                inset-y-0
-                -left-20
-                w-16
-                rotate-12
-                bg-white/20
-                blur-md
-                transition-transform
-                duration-700
-                group-hover:translate-x-[260px]
-              "
-            />
-          </button>
+          <p
+            className="
+              mx-auto
+              mt-6
+              max-w-2xl
+              text-[var(--text-secondary)]
+            "
+          >
+            L’univers créatif de José Nahounmé.
+          </p>
+
+          {/* Box interactive */}
+          <DiscoverBox
+            onOpen={() => setShowPortfolio(true)}
+          />
         </main>
       </div>
     );
@@ -140,7 +124,7 @@ function App() {
       {/* Arrière-plan WebGL */}
       <WebGLBackground />
 
-      {/* Tout le contenu au-dessus du WebGL */}
+      {/* Contenu au-dessus du WebGL */}
       <div className="relative z-10">
         {/* Curseur personnalisé */}
         <CustomCursor />
@@ -148,7 +132,10 @@ function App() {
         {/* Bouton WhatsApp */}
         <WhatsAppButton />
 
-        {/* Navbar */}
+        {/* Notifications flottantes */}
+        <LiveNotifications />
+
+        {/* Navigation */}
         <Navbar
           darkMode={darkMode}
           setDarkMode={setDarkMode}

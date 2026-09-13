@@ -181,7 +181,7 @@ function About() {
           md:text-6xl
         "
       >
-        José Nahounmé
+        José Nahounmè
       </h2>
 
       <p
@@ -193,7 +193,7 @@ function About() {
           md:text-xl
         "
       >
-        Graphiste designer & concepteur de sites web.
+        Graphiste designer & Développeur Web
       </p>
 
       <div

@@ -1,32 +1,42 @@
 const clients = [
   {
     id: 1,
-    name: "Bentahouse",
+    name: "APPLE TEAM",
     logo: "",
   },
   {
     id: 2,
-    name: "Petrolium",
+    name: "PETROL SA",
     logo: "",
   },
   {
     id: 3,
-    name: "Pharmaco",
+    name: "CONSULTING DRPS",
     logo: "",
   },
   {
     id: 4,
-    name: "Soxcar",
+    name: "SOX MOTORS",
     logo: "",
   },
   {
     id: 5,
-    name: "Client 05",
+    name: "KIDHOUSE",
     logo: "",
   },
   {
     id: 6,
-    name: "Client 06",
+    name: "COTONOU VERT",
+    logo: "",
+  },
+   {
+    id: 7,
+    name: "VERITABLE PROD",
+    logo: "",
+  },
+   {
+    id: 8,
+    name: "TUNDE EXPORT",
     logo: "",
   },
 ];

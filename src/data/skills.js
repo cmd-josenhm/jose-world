@@ -9,34 +9,29 @@ const skills = [
   },
 
   {
-    title: "UI / UX & Direction artistique",
-    tools: [
-      "Figma",
-      "Wireframing",
-      "Prototypage",
-      "Direction artistique",
-    ],
-  },
-
-  {
     title: "Développement Frontend",
     tools: [
       "HTML",
       "CSS",
       "JavaScript",
       "React",
+      "Next.js",
       "Tailwind CSS",
     ],
   },
 
   {
-    title: "Développement Web & Outils",
+    title: "Développement web & CMS",
     tools: [
       "Node.js",
       "MySQL",
       "Git",
       "GitHub",
       "API",
+      "WordPress",
+      "Shopify",
+      "Canva",
+      "Netlify",
     ],
   },
 ];
