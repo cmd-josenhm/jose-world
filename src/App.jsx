@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import CustomCursor from "./components/CustomCursor";
 import WebGLBackground from "./components/WebGLBackground";
@@ -16,31 +16,132 @@ import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
 import DiscoverBox from "./components/DiscoverBox";
 import LiveNotifications from "./components/LiveNotifications";
+import Game from "./components/Game";
+import GameButton from "./components/GameButton";
 
 function App() {
+  /* ========================================================
+     ÉTATS GLOBAUX
+     ======================================================== */
+
   const [darkMode, setDarkMode] = useState(true);
+
   const [showPortfolio, setShowPortfolio] = useState(false);
+
+  const [showGame, setShowGame] = useState(false);
+
   const [selectedProject, setSelectedProject] = useState(null);
 
-  // ==========================================
-  // GESTION DU THÈME
-  // ==========================================
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  /* ========================================================
+     GESTION DU THÈME
+     ======================================================== */
 
   useEffect(() => {
     document.documentElement.classList.toggle(
       "light",
       !darkMode
     );
+
+    localStorage.setItem(
+      "jose-world-theme",
+      darkMode ? "dark" : "light"
+    );
   }, [darkMode]);
 
-  // ==========================================
-  // PAGE DE COUVERTURE
-  // ==========================================
+  /* ========================================================
+     RESTAURATION DU THÈME
+     ======================================================== */
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem(
+      "jose-world-theme"
+    );
+
+    if (savedTheme === "light") {
+      setDarkMode(false);
+    }
+
+    if (savedTheme === "dark") {
+      setDarkMode(true);
+    }
+  }, []);
+
+  /* ========================================================
+     OUVERTURE DU PORTFOLIO
+     ======================================================== */
+
+  const handleOpenPortfolio = useCallback(() => {
+    if (isTransitioning) return;
+
+    setIsTransitioning(true);
+
+    window.setTimeout(() => {
+      setShowPortfolio(true);
+
+      window.setTimeout(() => {
+        setIsTransitioning(false);
+      }, 100);
+    }, 50);
+  }, [isTransitioning]);
+
+  /* ========================================================
+     OUVERTURE DU JEU
+     ======================================================== */
+
+  const handleOpenGame = useCallback(() => {
+    if (isTransitioning) return;
+
+    setIsTransitioning(true);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
+    window.setTimeout(() => {
+      setShowGame(true);
+      setIsTransitioning(false);
+    }, 250);
+  }, [isTransitioning]);
+
+  /* ========================================================
+     RETOUR DU JEU
+     ======================================================== */
+
+  const handleCloseGame = useCallback(() => {
+    setIsTransitioning(true);
+
+    window.setTimeout(() => {
+      setShowGame(false);
+
+      window.setTimeout(() => {
+        setIsTransitioning(false);
+      }, 100);
+    }, 150);
+  }, []);
+
+  /* ========================================================
+     PROJET
+     ======================================================== */
+
+  const handleProjectSelect = useCallback((project) => {
+    setSelectedProject(project);
+  }, []);
+
+  const handleCloseProject = useCallback(() => {
+    setSelectedProject(null);
+  }, []);
+
+  /* ========================================================
+     PAGE DE COUVERTURE
+     ======================================================== */
 
   if (!showPortfolio) {
     return (
       <div
-        className="
+        className={`
           relative
           flex
           min-h-screen
@@ -50,18 +151,27 @@ function App() {
           bg-[var(--bg-primary)]
           px-6
           text-[var(--text-primary)]
-        "
+          transition-opacity
+          duration-500
+          ${isTransitioning ? "opacity-90" : "opacity-100"}
+        `}
       >
-        {/* Bouton thème */}
-        <div className="absolute right-6 top-6 z-20">
+        {/* ================================================
+            THÈME
+        ================================================= */}
+
+        <div className="absolute right-6 top-6 z-30">
           <ThemeToggle
             darkMode={darkMode}
             setDarkMode={setDarkMode}
           />
         </div>
 
-        {/* Contenu de la couverture */}
-        <main className="relative z-10 text-center">
+        {/* ================================================
+            CONTENU COVER
+        ================================================= */}
+
+        <main className="relative z-10 w-full text-center">
           <p
             className="
               mb-4
@@ -97,18 +207,42 @@ function App() {
             L’univers créatif de José Nahounmé.
           </p>
 
-          {/* Box interactive */}
+          {/* ================================================
+              BOX DISCOVER
+          ================================================= */}
+
           <DiscoverBox
-            onOpen={() => setShowPortfolio(true)}
+            onOpen={handleOpenPortfolio}
           />
         </main>
       </div>
     );
   }
 
-  // ==========================================
-  // PAGE PRINCIPALE
-  // ==========================================
+  /* ========================================================
+     PAGE JEU
+     ======================================================== */
+
+  if (showGame) {
+    return (
+      <div
+        className="
+          min-h-screen
+          bg-[var(--bg-primary)]
+          text-[var(--text-primary)]
+        "
+      >
+        <Game
+          onBack={handleCloseGame}
+          darkMode={darkMode}
+        />
+      </div>
+    );
+  }
+
+  /* ========================================================
+     PAGE PRINCIPALE
+     ======================================================== */
 
   return (
     <div
@@ -119,68 +253,108 @@ function App() {
         overflow-x-hidden
         bg-[var(--bg-primary)]
         text-[var(--text-primary)]
+        transition-colors
+        duration-500
       "
     >
-      {/* Arrière-plan WebGL */}
+      {/* ====================================================
+          WEBGL
+      ==================================================== */}
+
       <WebGLBackground />
 
-      {/* Contenu au-dessus du WebGL */}
+      {/* ====================================================
+          CONTENU PRINCIPAL
+      ==================================================== */}
+
       <div className="relative z-10">
-        {/* Curseur personnalisé */}
+
+        {/* ================================================
+            CURSEUR
+        ================================================= */}
+
         <CustomCursor />
 
-        {/* Bouton WhatsApp */}
+        {/* ================================================
+            WHATSAPP
+        ================================================= */}
+
         <WhatsAppButton />
 
-        {/* Notifications flottantes */}
+        {/* ================================================
+            NOTIFICATIONS
+        ================================================= */}
+
         <LiveNotifications />
 
-        {/* Navigation */}
+        {/* ================================================
+            NAVBAR
+        ================================================= */}
+
         <Navbar
           darkMode={darkMode}
           setDarkMode={setDarkMode}
         />
 
-        {/* ======================================
+        {/* ================================================
             CONTENU DU PORTFOLIO
-        ======================================= */}
+        ================================================= */}
 
         <main>
+
           {/* Hero */}
+
           <Hero />
 
-          {/* Réalisations */}
+          {/* Projets */}
+
           <Projects
-            onProjectSelect={setSelectedProject}
+            onProjectSelect={handleProjectSelect}
           />
 
           {/* Clients */}
+
           <Clients />
 
           {/* Compétences */}
+
           <Skills />
 
           {/* Témoignages */}
+
           <Testimonials />
 
           {/* À propos */}
+
           <About />
 
           {/* Contact */}
+
           <Contact />
 
+          {/* ==============================================
+              TESTER MON JEU
+              volontairement absent de la Navbar
+          =============================================== */}
+
+          <GameButton
+            onClick={handleOpenGame}
+          />
+
           {/* Footer */}
+
           <Footer />
+
         </main>
 
-        {/* ======================================
-            FENÊTRE PROJET
-        ======================================= */}
+        {/* ==================================================
+            MODALE PROJET
+        ================================================== */}
 
         {selectedProject && (
           <ProjectModal
             project={selectedProject}
-            onClose={() => setSelectedProject(null)}
+            onClose={handleCloseProject}
           />
         )}
       </div>

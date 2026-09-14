@@ -1,104 +1,90 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+/* =========================================================
+   LIENS
+   ========================================================= */
 
 const links = [
   {
+    id: "home",
     label: "Accueil",
-    target: "home",
     icon: "home",
   },
   {
+    id: "projects",
     label: "Projets",
-    target: "projects",
     icon: "projects",
   },
   {
+    id: "about",
     label: "À propos",
-    target: "about",
     icon: "about",
   },
   {
+    id: "contact",
     label: "Contact",
-    target: "contact",
     icon: "contact",
   },
 ];
 
-function Icon({ type, size = 19 }) {
+/* =========================================================
+   ICÔNES SVG
+   ========================================================= */
+
+function Icon({ type, size = 18 }) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.8,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": "true",
+  };
+
   if (type === "home") {
     return (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
+      <svg {...common}>
         <path d="M3 10.5 12 3l9 7.5" />
-        <path d="M5 9.5V21h14V9.5" />
-        <path d="M9 21v-6h6v6" />
+        <path d="M5.5 9.5V21h13V9.5" />
+        <path d="M9.5 21v-6h5v6" />
       </svg>
     );
   }
 
   if (type === "projects") {
     return (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <rect x="3" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" />
-        <rect x="14" y="14" width="7" height="7" rx="1" />
+      <svg {...common}>
+        <rect x="3.5" y="4" width="17" height="16" rx="2.5" />
+        <path d="M7 8h10" />
+        <path d="M7 12h4" />
+        <path d="M7 16h7" />
       </svg>
     );
   }
 
   if (type === "about") {
     return (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <circle cx="12" cy="8" r="4" />
-        <path d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7" />
+      <svg {...common}>
+        <circle cx="12" cy="8" r="3.2" />
+        <path d="M5.5 20c.8-4 3-6 6.5-6s5.7 2 6.5 6" />
       </svg>
     );
   }
 
   if (type === "contact") {
     return (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <rect x="3" y="5" width="18" height="14" rx="2" />
-        <path d="m3 7 9 6 9-6" />
+      <svg {...common}>
+        <rect
+          x="3.5"
+          y="5"
+          width="17"
+          height="14"
+          rx="2.5"
+        />
+        <path d="m5 7 7 5 7-5" />
       </svg>
     );
   }
@@ -106,16 +92,20 @@ function Icon({ type, size = 19 }) {
   return null;
 }
 
+/* =========================================================
+   ICÔNES THÈME
+   ========================================================= */
+
 function ThemeIcon({ darkMode }) {
   if (darkMode) {
     return (
       <svg
-        width="18"
-        height="18"
+        width="17"
+        height="17"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
         aria-hidden="true"
@@ -123,24 +113,24 @@ function ThemeIcon({ darkMode }) {
         <circle cx="12" cy="12" r="4" />
         <path d="M12 2v2" />
         <path d="M12 20v2" />
-        <path d="m4.93 4.93 1.41 1.41" />
-        <path d="m17.66 17.66 1.41 1.41" />
+        <path d="m4.93 4.93 1.42 1.42" />
+        <path d="m17.65 17.65 1.42 1.42" />
         <path d="M2 12h2" />
         <path d="M20 12h2" />
-        <path d="m6.34 17.66-1.41 1.41" />
-        <path d="m19.07 4.93-1.41 1.41" />
+        <path d="m4.93 19.07 1.42-1.42" />
+        <path d="m17.65 6.35 1.42-1.42" />
       </svg>
     );
   }
 
   return (
     <svg
-      width="18"
-      height="18"
+      width="17"
+      height="17"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -150,47 +140,58 @@ function ThemeIcon({ darkMode }) {
   );
 }
 
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
 function Navbar({ darkMode, setDarkMode }) {
   const [activeSection, setActiveSection] = useState("home");
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] =
+    useState(false);
 
-  const scrollToSection = (id) => {
-    const section = document.getElementById(id);
+  const navRef = useRef(null);
+  const indicatorRef = useRef(null);
+  const previousScrollY = useRef(0);
+  const observerRef = useRef(null);
 
-    if (!section) {
-      return;
-    }
-
-    section.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
+  /* ======================================================
+     ACTIVE SECTION
+     ====================================================== */
 
   useEffect(() => {
     const sections = links
-      .map((link) => document.getElementById(link.target))
+      .map((link) =>
+        document.getElementById(link.id)
+      )
       .filter(Boolean);
 
-    if (sections.length === 0) {
-      return;
-    }
+    if (!sections.length) return;
+
+    observerRef.current?.disconnect();
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const visibleSections = entries
+        const visibleEntries = entries
           .filter((entry) => entry.isIntersecting)
           .sort(
             (a, b) =>
-              b.intersectionRatio - a.intersectionRatio
+              b.intersectionRatio -
+              a.intersectionRatio
           );
 
-        if (visibleSections.length > 0) {
-          setActiveSection(visibleSections[0].target.id);
+        if (visibleEntries.length > 0) {
+          setActiveSection(
+            visibleEntries[0].target.id
+          );
         }
       },
       {
-        threshold: [0.15, 0.35, 0.6],
-        rootMargin: "-15% 0px -55% 0px",
+        root: null,
+        threshold: [0.2, 0.35, 0.5, 0.7],
+        rootMargin:
+          "-15% 0px -55% 0px",
       }
     );
 
@@ -198,259 +199,617 @@ function Navbar({ darkMode, setDarkMode }) {
       observer.observe(section);
     });
 
+    observerRef.current = observer;
+
     return () => {
       observer.disconnect();
+      observerRef.current = null;
     };
   }, []);
 
-  const toggleTheme = () => {
-    setDarkMode((current) => !current);
+  /* ======================================================
+     SCROLL — VISIBILITÉ
+     ====================================================== */
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+
+      setIsScrolled(currentY > 20);
+
+      if (currentY <= 10) {
+        setIsVisible(true);
+        previousScrollY.current = currentY;
+        return;
+      }
+
+      const difference =
+        currentY - previousScrollY.current;
+
+      if (difference > 8) {
+        setIsVisible(false);
+      }
+
+      if (difference < -8) {
+        setIsVisible(true);
+      }
+
+      previousScrollY.current = currentY;
+    };
+
+    window.addEventListener(
+      "scroll",
+      handleScroll,
+      { passive: true }
+    );
+
+    return () => {
+      window.removeEventListener(
+        "scroll",
+        handleScroll
+      );
+    };
+  }, []);
+
+  /* ======================================================
+     INDICATEUR ACTIF
+     ====================================================== */
+
+  useEffect(() => {
+    const nav = navRef.current;
+    const indicator = indicatorRef.current;
+
+    if (!nav || !indicator) return;
+
+    const activeElement = nav.querySelector(
+      `[data-nav-id="${activeSection}"]`
+    );
+
+    if (!activeElement) return;
+
+    const navRect =
+      nav.getBoundingClientRect();
+
+    const itemRect =
+      activeElement.getBoundingClientRect();
+
+    const left =
+      itemRect.left -
+      navRect.left;
+
+    indicator.style.width =
+      `${itemRect.width}px`;
+
+    indicator.style.transform =
+      `translateX(${left}px)`;
+  }, [activeSection]);
+
+  /* ======================================================
+     NAVIGATION
+     ====================================================== */
+
+  const scrollToSection = (
+    event,
+    sectionId
+  ) => {
+    event.preventDefault();
+
+    const section =
+      document.getElementById(sectionId);
+
+    if (!section) return;
+
+    setActiveSection(sectionId);
+    setIsVisible(true);
+    setIsMobileMenuOpen(false);
+
+    section.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
+
+  /* ======================================================
+     MAGNÉTISME
+     ====================================================== */
+
+  const handleMagneticMove = (event) => {
+    const element =
+      event.currentTarget;
+
+    const rect =
+      element.getBoundingClientRect();
+
+    const x =
+      (event.clientX -
+        rect.left -
+        rect.width / 2) *
+      0.12;
+
+    const y =
+      (event.clientY -
+        rect.top -
+        rect.height / 2) *
+      0.12;
+
+    element.style.transform =
+      `translate(${x}px, ${y}px)`;
+  };
+
+  const handleMagneticLeave = (event) => {
+    event.currentTarget.style.transform =
+      "translate(0, 0)";
+  };
+
+  /* ======================================================
+     RENDER DES LIENS
+     ====================================================== */
+
+  const renderLinks = (mobile = false) =>
+    links.map((link) => {
+      const isActive =
+        activeSection === link.id;
+
+      return (
+        <a
+          key={link.id}
+          href={`#${link.id}`}
+          data-nav-id={link.id}
+          onClick={(event) =>
+            scrollToSection(
+              event,
+              link.id
+            )
+          }
+          onMouseMove={
+            !mobile
+              ? handleMagneticMove
+              : undefined
+          }
+          onMouseLeave={
+            !mobile
+              ? handleMagneticLeave
+              : undefined
+          }
+          className={`
+            group
+            relative
+            flex
+            items-center
+            gap-2
+            rounded-full
+            transition-all
+            duration-300
+            ${
+              mobile
+                ? "w-full justify-between px-4 py-3"
+                : "px-3 py-2"
+            }
+            ${
+              isActive
+                ? "text-[var(--text-primary)]"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+            }
+          `}
+        >
+          <span
+            className={`
+              transition-all
+              duration-300
+              ${
+                isActive
+                  ? "scale-110 text-[var(--accent)]"
+                  : "group-hover:scale-110"
+              }
+            `}
+          >
+            <Icon
+              type={link.icon}
+              size={mobile ? 18 : 16}
+            />
+          </span>
+
+          <span
+            className={`
+              font-semibold
+              ${
+                mobile
+                  ? "text-sm"
+                  : "text-[11px]"
+              }
+            `}
+          >
+            {link.label}
+          </span>
+
+          {mobile && (
+            <span
+              className={`
+                text-[var(--accent)]
+                transition-all
+                duration-300
+                ${
+                  isActive
+                    ? "translate-x-0 opacity-100"
+                    : "-translate-x-2 opacity-0"
+                }
+              `}
+            >
+              →
+            </span>
+          )}
+        </a>
+      );
+    });
 
   return (
     <>
-      {/* ==========================================
-          NAVBAR DESKTOP
-      ========================================== */}
+      {/* ==================================================
+          DESKTOP NAVBAR
+          ================================================== */}
 
-      <header
-        className="
+      <nav
+        className={`
           fixed
           left-1/2
           top-5
-          z-50
+          z-[100]
           hidden
           w-[calc(100%-40px)]
           max-w-6xl
           -translate-x-1/2
           md:block
-        "
+          transition-all
+          duration-500
+          ${
+            isVisible
+              ? "translate-y-0 opacity-100"
+              : "-translate-y-20 opacity-0 pointer-events-none"
+          }
+        `}
       >
-        <nav
-          className="
+        <div
+          ref={navRef}
+          className={`
+            relative
             flex
             items-center
             justify-between
             rounded-full
             border
             border-[var(--border)]
-            bg-[var(--bg-primary)]/75
-            px-5
-            py-3
-            shadow-xl
+            px-3
+            py-2
             backdrop-blur-xl
-          "
+            transition-all
+            duration-500
+            ${
+              isScrolled
+                ? "bg-[var(--bg-primary)]/80 shadow-[0_15px_50px_rgba(0,0,0,0.18)]"
+                : "bg-[var(--bg-primary)]/55"
+            }
+          `}
         >
           {/* Logo */}
-          <button
-            type="button"
-            onClick={() => scrollToSection("home")}
-            aria-label="Retour à l'accueil"
+
+          <a
+            href="#home"
+            onClick={(event) =>
+              scrollToSection(
+                event,
+                "home"
+              )
+            }
             className="
+              group
               flex
+              shrink-0
               items-center
-              transition-transform
-              duration-300
-              hover:scale-105
             "
           >
             <img
               src="/images/logo.png"
-              alt="Logo José Nahounmé"
-              className="h-8 w-auto object-contain"
+              alt="José Nahounmé"
+              className="
+                h-8
+                w-auto
+                object-contain
+                transition-transform
+                duration-300
+                group-hover:scale-105
+              "
             />
-          </button>
+          </a>
 
           {/* Liens */}
-          <div className="flex items-center gap-1">
-            {links.map((link) => {
-              const isActive =
-                activeSection === link.target;
 
-              return (
-                <button
-                  key={link.target}
-                  type="button"
-                  onClick={() =>
-                    scrollToSection(link.target)
-                  }
-                  className={`
-                    relative
-                    rounded-full
-                    px-4
-                    py-2
-                    text-sm
-                    font-semibold
-                    transition-all
-                    duration-300
-                    ${
-                      isActive
-                        ? "text-[var(--text-primary)]"
-                        : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                    }
-                  `}
-                >
-                  {link.label}
+          <div className="relative flex items-center">
+            {/* Indicateur */}
 
-                  {isActive && (
-                    <span
-                      className="
-                        absolute
-                        bottom-1
-                        left-1/2
-                        h-1
-                        w-1
-                        -translate-x-1/2
-                        rounded-full
-                        bg-[var(--accent)]
-                      "
-                    />
-                  )}
-                </button>
-              );
-            })}
+            <div
+              ref={indicatorRef}
+              className="
+                pointer-events-none
+                absolute
+                bottom-0
+                left-0
+                h-px
+                rounded-full
+                bg-[var(--accent)]
+                shadow-[0_0_12px_rgba(30,136,229,0.7)]
+                transition-all
+                duration-500
+                ease-out
+              "
+            />
+
+            <div className="flex items-center gap-1">
+              {renderLinks(false)}
+            </div>
           </div>
 
           {/* Thème */}
+
           <button
             type="button"
-            onClick={toggleTheme}
+            onClick={() =>
+              setDarkMode((value) => !value)
+            }
             aria-label={
               darkMode
                 ? "Activer le mode clair"
                 : "Activer le mode sombre"
             }
+            onMouseMove={handleMagneticMove}
+            onMouseLeave={handleMagneticLeave}
             className="
               flex
-              h-10
-              w-10
+              h-9
+              w-9
+              shrink-0
               items-center
               justify-center
               rounded-full
               border
               border-[var(--border)]
+              text-[var(--text-secondary)]
               transition-all
               duration-300
-              hover:scale-105
               hover:border-[var(--accent)]
               hover:text-[var(--accent)]
             "
           >
-            <ThemeIcon darkMode={darkMode} />
+            <span
+              className="
+                transition-transform
+                duration-500
+              "
+            >
+              <ThemeIcon
+                darkMode={darkMode}
+              />
+            </span>
           </button>
-        </nav>
-      </header>
+        </div>
+      </nav>
 
-      {/* ==========================================
-          NAVBAR MOBILE
-      ========================================== */}
+      {/* ==================================================
+          MOBILE NAVBAR
+          ================================================== */}
 
-      <nav
+      <div
         className="
           fixed
           bottom-3
           left-1/2
-          z-50
-          flex
+          z-[100]
+          w-[calc(100%-20px)]
+          max-w-md
           -translate-x-1/2
-          items-center
-          gap-1
-          rounded-full
-          border
-          border-[var(--border)]
-          bg-[var(--bg-primary)]/80
-          px-2
-          py-2
-          shadow-2xl
-          backdrop-blur-xl
           md:hidden
         "
       >
-        {links.map((link) => {
-          const isActive =
-            activeSection === link.target;
+        <div className="relative">
+          {/* Menu étendu */}
 
-          return (
-            <button
-              key={link.target}
-              type="button"
-              onClick={() =>
-                scrollToSection(link.target)
+          <div
+            className={`
+              absolute
+              bottom-[58px]
+              left-0
+              right-0
+              overflow-hidden
+              rounded-3xl
+              border
+              border-[var(--border)]
+              bg-[var(--bg-primary)]/90
+              p-2
+              backdrop-blur-xl
+              shadow-[0_20px_60px_rgba(0,0,0,0.28)]
+              transition-all
+              duration-400
+              ${
+                isMobileMenuOpen
+                  ? "visible translate-y-0 opacity-100"
+                  : "pointer-events-none invisible translate-y-3 opacity-0"
               }
-              aria-label={link.label}
+            `}
+          >
+            <div className="flex flex-col">
+              {renderLinks(true)}
+            </div>
+          </div>
+
+          {/* Barre principale */}
+
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+              gap-1
+              rounded-full
+              border
+              border-[var(--border)]
+              bg-[var(--bg-primary)]/85
+              p-2
+              shadow-[0_15px_45px_rgba(0,0,0,0.25)]
+              backdrop-blur-xl
+            "
+          >
+            {/* Accueil */}
+
+            <a
+              href="#home"
+              onClick={(event) =>
+                scrollToSection(
+                  event,
+                  "home"
+                )
+              }
               className={`
-                group
-                relative
                 flex
-                h-11
-                w-11
+                h-10
+                w-10
                 items-center
                 justify-center
                 rounded-full
                 transition-all
                 duration-300
-                active:scale-90
                 ${
-                  isActive
-                    ? "bg-[var(--accent)]/10 text-[var(--accent)]"
+                  activeSection === "home"
+                    ? "bg-[var(--accent)] text-white"
                     : "text-[var(--text-secondary)]"
                 }
               `}
+              aria-label="Accueil"
             >
-              <span className="transition-transform duration-300 group-hover:scale-110">
-                <Icon type={link.icon} />
-              </span>
+              <Icon
+                type="home"
+                size={17}
+              />
+            </a>
 
-              {isActive && (
+            {/* Menu */}
+
+            <button
+              type="button"
+              aria-label={
+                isMobileMenuOpen
+                  ? "Fermer le menu"
+                  : "Ouvrir le menu"
+              }
+              onClick={() =>
+                setIsMobileMenuOpen(
+                  (value) => !value
+                )
+              }
+              className="
+                flex
+                h-10
+                w-10
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-[var(--border)]
+                text-[var(--text-primary)]
+                transition-all
+                duration-300
+              "
+            >
+              <span className="relative h-4 w-5">
                 <span
-                  className="
+                  className={`
                     absolute
-                    bottom-1
-                    h-1
-                    w-1
-                    rounded-full
-                    bg-[var(--accent)]
-                    shadow-[0_0_8px_rgba(30,136,229,0.7)]
-                  "
+                    left-0
+                    top-0
+                    h-px
+                    w-5
+                    bg-current
+                    transition-all
+                    duration-300
+                    ${
+                      isMobileMenuOpen
+                        ? "top-1/2 rotate-45"
+                        : ""
+                    }
+                  `}
                 />
-              )}
-            </button>
-          );
-        })}
 
-        {/* Thème mobile */}
-        <button
-          type="button"
-          onClick={toggleTheme}
-          aria-label={
-            darkMode
-              ? "Activer le mode clair"
-              : "Activer le mode sombre"
-          }
-          className="
-            group
-            ml-1
-            flex
-            h-11
-            w-11
-            items-center
-            justify-center
-            rounded-full
-            border
-            border-[var(--border)]
-            text-[var(--text-secondary)]
-            transition-all
-            duration-300
-            active:scale-90
-            hover:border-[var(--accent)]
-            hover:text-[var(--accent)]
-          "
-        >
-          <span className="transition-transform duration-500 group-hover:rotate-12">
-            <ThemeIcon darkMode={darkMode} />
-          </span>
-        </button>
-      </nav>
+                <span
+                  className={`
+                    absolute
+                    left-0
+                    top-1/2
+                    h-px
+                    w-5
+                    -translate-y-1/2
+                    bg-current
+                    transition-all
+                    duration-300
+                    ${
+                      isMobileMenuOpen
+                        ? "opacity-0"
+                        : ""
+                    }
+                  `}
+                />
+
+                <span
+                  className={`
+                    absolute
+                    left-0
+                    bottom-0
+                    h-px
+                    w-5
+                    bg-current
+                    transition-all
+                    duration-300
+                    ${
+                      isMobileMenuOpen
+                        ? "bottom-1/2 -rotate-45"
+                        : ""
+                    }
+                  `}
+                />
+              </span>
+            </button>
+
+            {/* Thème */}
+
+            <button
+              type="button"
+              onClick={() =>
+                setDarkMode(
+                  (value) => !value
+                )
+              }
+              aria-label={
+                darkMode
+                  ? "Activer le mode clair"
+                  : "Activer le mode sombre"
+              }
+              className="
+                flex
+                h-10
+                w-10
+                items-center
+                justify-center
+                rounded-full
+                text-[var(--text-secondary)]
+                transition-all
+                duration-300
+                hover:text-[var(--accent)]
+              "
+            >
+              <ThemeIcon
+                darkMode={darkMode}
+              />
+            </button>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

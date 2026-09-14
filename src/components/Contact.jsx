@@ -1,257 +1,818 @@
-import { Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
+import { useLayoutEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const initialForm = {
+  nom: "",
+  prenoms: "",
+  email: "",
+  tel: "",
+  ville: "",
+  message: "",
+};
 
 function Contact() {
-  const phoneNumber = "2290151370949";
+  const sectionRef = useRef(null);
 
-  const whatsappMessage = encodeURIComponent(
-    "Bonjour José, je viens de découvrir votre portfolio et j'aimerais échanger avec vous concernant un projet."
-  );
+  const [form, setForm] = useState(initialForm);
+  const [isFocused, setIsFocused] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
+  /* ========================================================
+     ANIMATION
+     ======================================================== */
+
+  useLayoutEffect(() => {
+    const section = sectionRef.current;
+
+    if (!section) return;
+
+    const ctx = gsap.context(() => {
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top 78%",
+          once: true,
+        },
+      });
+
+      timeline
+        .from(".contact-kicker", {
+          y: 20,
+          opacity: 0,
+          duration: 0.7,
+          ease: "power3.out",
+        })
+        .from(
+          ".contact-title",
+          {
+            y: 45,
+            opacity: 0,
+            duration: 0.9,
+            ease: "power3.out",
+          },
+          "-=0.4"
+        )
+        .from(
+          ".contact-intro",
+          {
+            y: 25,
+            opacity: 0,
+            duration: 0.7,
+            ease: "power3.out",
+          },
+          "-=0.5"
+        )
+        .from(
+          ".contact-panel",
+          {
+            y: 50,
+            opacity: 0,
+            scale: 0.98,
+            duration: 0.9,
+            ease: "power3.out",
+          },
+          "-=0.4"
+        );
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
+  /* ========================================================
+     FORMULAIRE
+     ======================================================== */
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setForm((current) => ({
+      ...current,
+      [name]: value,
+    }));
+
+    setSubmitted(false);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const subject = encodeURIComponent(
+      "Nouvelle demande depuis Jose World"
+    );
+
+    const body = encodeURIComponent(`
+Nom : ${form.nom}
+Prénoms : ${form.prenoms}
+Email : ${form.email}
+Téléphone : ${form.tel}
+Ville / Pays : ${form.ville}
+
+Message :
+${form.message}
+    `);
+
+    window.location.href =
+      `mailto:josenahounme@gmail.com?subject=${subject}&body=${body}`;
+
+    setSubmitted(true);
+  };
 
   return (
     <section
+      ref={sectionRef}
       id="contact"
-      className="relative px-6 py-24 md:px-10 md:py-32"
+      className="
+        relative
+        overflow-hidden
+        px-6
+        py-24
+        md:px-10
+        md:py-32
+      "
     >
       <div className="mx-auto max-w-7xl">
+
+        {/* ==================================================
+            EN-TÊTE
+            ================================================== */}
+
+        <div className="contact-heading max-w-4xl">
+
+          <p
+            className="
+              contact-kicker
+              mb-4
+              text-sm
+              font-semibold
+              uppercase
+              tracking-[0.3em]
+              text-[var(--accent)]
+            "
+          >
+            Contact
+          </p>
+
+          <h2
+            className="
+              contact-title
+              text-4xl
+              font-extrabold
+              leading-[0.95]
+              tracking-tight
+              sm:text-5xl
+              md:text-7xl
+            "
+          >
+            Parlons de votre
+            <span className="text-[var(--accent)]">
+              {" "}projet.
+            </span>
+          </h2>
+
+          <p
+            className="
+              contact-intro
+              mt-7
+              max-w-2xl
+              text-sm
+              leading-7
+              text-[var(--text-secondary)]
+              md:text-base
+            "
+          >
+            Une idée, un besoin ou un projet à concrétiser ?
+            Écrivez-moi et construisons quelque chose
+            d'utile, moderne et mémorable.
+          </p>
+        </div>
+
+        {/* ==================================================
+            PANNEAU
+            ================================================== */}
+
         <div
           className="
-            relative
+            contact-panel
+            mt-14
+            grid
             overflow-hidden
             rounded-[2rem]
             border
             border-[var(--border)]
             bg-[var(--bg-secondary)]
-            p-6
-            md:p-10
-            lg:p-14
+            lg:grid-cols-[0.75fr_1.25fr]
           "
         >
-          {/* Halo */}
+
+          {/* ==================================================
+              INFORMATIONS
+              ================================================== */}
+
           <div
             className="
-              pointer-events-none
-              absolute
-              right-[-10%]
-              top-[-20%]
-              h-[350px]
-              w-[350px]
-              rounded-full
-              bg-[var(--accent)]/10
-              blur-[100px]
+              relative
+              overflow-hidden
+              border-b
+              border-[var(--border)]
+              p-7
+              md:p-10
+              lg:border-b-0
+              lg:border-r
             "
-          />
+          >
+            <div
+              aria-hidden="true"
+              className="
+                pointer-events-none
+                absolute
+                -right-24
+                -top-24
+                h-64
+                w-64
+                rounded-full
+                bg-[#1E88E5]/10
+                blur-[80px]
+              "
+            />
 
-          <div className="relative grid gap-12 lg:grid-cols-2 lg:gap-20">
-
-            {/* =========================
-                TEXTE
-            ========================== */}
-            <div>
-              <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-[var(--accent)]">
-                Contact
-              </p>
-
-              <h2
-                className="
-                  max-w-2xl
-                  text-4xl
-                  font-extrabold
-                  tracking-tight
-                  md:text-6xl
-                "
-              >
-                Parlons de votre prochain projet.
-              </h2>
+            <div className="relative z-10">
 
               <p
                 className="
-                  mt-6
-                  max-w-xl
-                  text-sm
-                  leading-8
-                  text-[var(--text-secondary)]
-                  md:text-base
+                  text-[9px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.22em]
+                  text-[var(--accent)]
                 "
               >
-                Une identité visuelle, un site web, une interface ou une
-                expérience digitale à concevoir ? Présentez-moi votre idée et
-                échangeons.
+                Disponible pour collaborer
               </p>
 
-              {/* WhatsApp */}
+              <h3
+                className="
+                  mt-5
+                  max-w-sm
+                  text-2xl
+                  font-extrabold
+                  leading-tight
+                  tracking-tight
+                  md:text-3xl
+                "
+              >
+                Faisons passer votre idée
+                à l'étape suivante.
+              </h3>
+
+              {/* Email */}
+
               <a
-                href={whatsappUrl}
+                href="mailto:josenahounme@gmail.com"
+                className="
+                  mt-10
+                  block
+                  rounded-2xl
+                  border
+                  border-[var(--border)]
+                  bg-[var(--bg-primary)]/40
+                  p-4
+                  transition-all
+                  duration-300
+                  hover:-translate-y-1
+                  hover:border-[#1E88E5]/40
+                "
+              >
+                <span
+                  className="
+                    block
+                    text-[8px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.15em]
+                    text-[var(--text-secondary)]
+                  "
+                >
+                  Email
+                </span>
+
+                <span
+                  className="
+                    mt-2
+                    block
+                    break-all
+                    text-sm
+                    font-bold
+                  "
+                >
+                  josenahounme@gmail.com
+                </span>
+              </a>
+
+              {/* WhatsApp */}
+
+              <a
+                href="https://wa.me/2290151370949?text=Bonjour%20José%2C%20je%20souhaite%20parler%20d%27un%20projet."
                 target="_blank"
                 rel="noreferrer"
                 className="
+                  mt-3
+                  block
+                  rounded-2xl
+                  border
+                  border-[var(--border)]
+                  bg-[var(--bg-primary)]/40
+                  p-4
+                  transition-all
+                  duration-300
+                  hover:-translate-y-1
+                  hover:border-[#1E88E5]/40
+                "
+              >
+                <span
+                  className="
+                    block
+                    text-[8px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.15em]
+                    text-[var(--text-secondary)]
+                  "
+                >
+                  WhatsApp
+                </span>
+
+                <span
+                  className="
+                    mt-2
+                    block
+                    text-sm
+                    font-bold
+                  "
+                >
+                  +229 01 51 37 09 49
+                </span>
+              </a>
+
+              {/* Localisation */}
+
+              <div
+                className="
+                  mt-3
+                  rounded-2xl
+                  border
+                  border-[var(--border)]
+                  bg-[var(--bg-primary)]/40
+                  p-4
+                "
+              >
+                <span
+                  className="
+                    block
+                    text-[8px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.15em]
+                    text-[var(--text-secondary)]
+                  "
+                >
+                  Localisation
+                </span>
+
+                <span
+                  className="
+                    mt-2
+                    block
+                    text-sm
+                    font-bold
+                  "
+                >
+                  Cotonou, Bénin
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* ==================================================
+              FORMULAIRE
+              ================================================== */}
+
+          <form
+            onSubmit={handleSubmit}
+            className="
+              relative
+              p-7
+              md:p-10
+            "
+          >
+            <div className="grid gap-5 sm:grid-cols-2">
+
+              {/* Nom */}
+
+              <div className="relative">
+                <label
+                  htmlFor="nom"
+                  className="
+                    mb-2
+                    block
+                    text-[9px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.14em]
+                    text-[var(--text-secondary)]
+                  "
+                >
+                  Nom *
+                </label>
+
+                <input
+                  id="nom"
+                  name="nom"
+                  type="text"
+                  required
+                  value={form.nom}
+                  onChange={handleChange}
+                  onFocus={() =>
+                    setIsFocused("nom")
+                  }
+                  onBlur={() =>
+                    setIsFocused("")
+                  }
+                  className={`
+                    w-full
+                    rounded-xl
+                    border
+                    bg-[var(--bg-primary)]/40
+                    px-4
+                    py-3
+                    text-sm
+                    text-[var(--text-primary)]
+                    outline-none
+                    transition-all
+                    duration-300
+                    ${
+                      isFocused === "nom"
+                        ? "border-[#1E88E5] shadow-[0_0_20px_rgba(30,136,229,0.08)]"
+                        : "border-[var(--border)]"
+                    }
+                  `}
+                  placeholder="Votre nom"
+                />
+              </div>
+
+              {/* Prénoms */}
+
+              <div>
+                <label
+                  htmlFor="prenoms"
+                  className="
+                    mb-2
+                    block
+                    text-[9px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.14em]
+                    text-[var(--text-secondary)]
+                  "
+                >
+                  Prénoms *
+                </label>
+
+                <input
+                  id="prenoms"
+                  name="prenoms"
+                  type="text"
+                  required
+                  value={form.prenoms}
+                  onChange={handleChange}
+                  onFocus={() =>
+                    setIsFocused("prenoms")
+                  }
+                  onBlur={() =>
+                    setIsFocused("")
+                  }
+                  className={`
+                    w-full
+                    rounded-xl
+                    border
+                    bg-[var(--bg-primary)]/40
+                    px-4
+                    py-3
+                    text-sm
+                    text-[var(--text-primary)]
+                    outline-none
+                    transition-all
+                    duration-300
+                    ${
+                      isFocused === "prenoms"
+                        ? "border-[#1E88E5] shadow-[0_0_20px_rgba(30,136,229,0.08)]"
+                        : "border-[var(--border)]"
+                    }
+                  `}
+                  placeholder="Vos prénoms"
+                />
+              </div>
+
+              {/* Email */}
+
+              <div>
+                <label
+                  htmlFor="email"
+                  className="
+                    mb-2
+                    block
+                    text-[9px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.14em]
+                    text-[var(--text-secondary)]
+                  "
+                >
+                  Email *
+                </label>
+
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={form.email}
+                  onChange={handleChange}
+                  onFocus={() =>
+                    setIsFocused("email")
+                  }
+                  onBlur={() =>
+                    setIsFocused("")
+                  }
+                  className={`
+                    w-full
+                    rounded-xl
+                    border
+                    bg-[var(--bg-primary)]/40
+                    px-4
+                    py-3
+                    text-sm
+                    text-[var(--text-primary)]
+                    outline-none
+                    transition-all
+                    duration-300
+                    ${
+                      isFocused === "email"
+                        ? "border-[#1E88E5] shadow-[0_0_20px_rgba(30,136,229,0.08)]"
+                        : "border-[var(--border)]"
+                    }
+                  `}
+                  placeholder="vous@email.com"
+                />
+              </div>
+
+              {/* Téléphone */}
+
+              <div>
+                <label
+                  htmlFor="tel"
+                  className="
+                    mb-2
+                    block
+                    text-[9px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.14em]
+                    text-[var(--text-secondary)]
+                  "
+                >
+                  Téléphone
+                </label>
+
+                <input
+                  id="tel"
+                  name="tel"
+                  type="tel"
+                  value={form.tel}
+                  onChange={handleChange}
+                  onFocus={() =>
+                    setIsFocused("tel")
+                  }
+                  onBlur={() =>
+                    setIsFocused("")
+                  }
+                  className={`
+                    w-full
+                    rounded-xl
+                    border
+                    bg-[var(--bg-primary)]/40
+                    px-4
+                    py-3
+                    text-sm
+                    text-[var(--text-primary)]
+                    outline-none
+                    transition-all
+                    duration-300
+                    ${
+                      isFocused === "tel"
+                        ? "border-[#1E88E5] shadow-[0_0_20px_rgba(30,136,229,0.08)]"
+                        : "border-[var(--border)]"
+                    }
+                  `}
+                  placeholder="+229 ..."
+                />
+              </div>
+
+              {/* Ville */}
+
+              <div className="sm:col-span-2">
+                <label
+                  htmlFor="ville"
+                  className="
+                    mb-2
+                    block
+                    text-[9px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.14em]
+                    text-[var(--text-secondary)]
+                  "
+                >
+                  Ville / Pays
+                </label>
+
+                <input
+                  id="ville"
+                  name="ville"
+                  type="text"
+                  value={form.ville}
+                  onChange={handleChange}
+                  onFocus={() =>
+                    setIsFocused("ville")
+                  }
+                  onBlur={() =>
+                    setIsFocused("")
+                  }
+                  className={`
+                    w-full
+                    rounded-xl
+                    border
+                    bg-[var(--bg-primary)]/40
+                    px-4
+                    py-3
+                    text-sm
+                    text-[var(--text-primary)]
+                    outline-none
+                    transition-all
+                    duration-300
+                    ${
+                      isFocused === "ville"
+                        ? "border-[#1E88E5] shadow-[0_0_20px_rgba(30,136,229,0.08)]"
+                        : "border-[var(--border)]"
+                    }
+                  `}
+                  placeholder="Cotonou, Bénin"
+                />
+              </div>
+
+              {/* Message */}
+
+              <div className="sm:col-span-2">
+                <label
+                  htmlFor="message"
+                  className="
+                    mb-2
+                    block
+                    text-[9px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.14em]
+                    text-[var(--text-secondary)]
+                  "
+                >
+                  Message *
+                </label>
+
+                <textarea
+                  id="message"
+                  name="message"
+                  required
+                  rows={5}
+                  value={form.message}
+                  onChange={handleChange}
+                  onFocus={() =>
+                    setIsFocused("message")
+                  }
+                  onBlur={() =>
+                    setIsFocused("")
+                  }
+                  className={`
+                    w-full
+                    resize-none
+                    rounded-xl
+                    border
+                    bg-[var(--bg-primary)]/40
+                    px-4
+                    py-3
+                    text-sm
+                    text-[var(--text-primary)]
+                    outline-none
+                    transition-all
+                    duration-300
+                    ${
+                      isFocused === "message"
+                        ? "border-[#1E88E5] shadow-[0_0_20px_rgba(30,136,229,0.08)]"
+                        : "border-[var(--border)]"
+                    }
+                  `}
+                  placeholder="Bonjour José..."
+                />
+              </div>
+
+            </div>
+
+            {/* ==================================================
+                BOUTON
+                ================================================== */}
+
+            <div
+              className="
+                mt-6
+                flex
+                flex-wrap
+                items-center
+                justify-between
+                gap-4
+              "
+            >
+              <p
+                className="
+                  max-w-xs
+                  text-[9px]
+                  leading-5
+                  text-[var(--text-secondary)]
+                "
+              >
+                Votre message ouvrira votre messagerie
+                afin de finaliser l'envoi.
+              </p>
+
+              <button
+                type="submit"
+                className="
                   group
-                  mt-8
                   inline-flex
                   items-center
                   gap-3
                   rounded-full
                   bg-[var(--accent)]
                   px-6
-                  py-4
-                  text-sm
-                  font-semibold
+                  py-3.5
+                  text-xs
+                  font-bold
                   text-white
+                  shadow-[0_12px_35px_rgba(30,136,229,0.18)]
                   transition-all
                   duration-300
                   hover:-translate-y-1
-                  hover:shadow-[0_15px_40px_rgba(30,136,229,0.25)]
+                  hover:shadow-[0_18px_45px_rgba(30,136,229,0.28)]
                 "
               >
-                Discuter sur WhatsApp
+                Envoyer le message
 
-                <ArrowUpRight
-                  size={18}
+                <span
                   className="
                     transition-transform
                     duration-300
                     group-hover:translate-x-1
-                    group-hover:-translate-y-1
                   "
-                />
-              </a>
+                >
+                  ↗
+                </span>
+              </button>
             </div>
 
-            {/* =========================
-                INFORMATIONS
-            ========================== */}
-            <div className="grid gap-4">
+            {/* ==================================================
+                RETOUR VISUEL
+                ================================================== */}
 
-              {/* Email */}
-              <a
-                href="mailto:josenahounme@gmail.com"
-                className="
-                  group
-                  flex
-                  items-center
-                  gap-4
-                  rounded-2xl
-                  border
-                  border-[var(--border)]
-                  p-5
-                  transition-all
-                  duration-300
-                  hover:border-[var(--accent)]
-                "
-              >
-                <span
-                  className="
-                    flex
-                    h-11
-                    w-11
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-[var(--accent)]/10
-                    text-[var(--accent)]
-                  "
-                >
-                  <Mail size={19} />
-                </span>
-
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    Email
-                  </p>
-
-                  <p className="mt-1 text-sm font-semibold">
-                    josenahounme@gmail.com
-                  </p>
-                </div>
-              </a>
-
-              {/* Téléphone */}
-              <a
-                href="tel:+2290151370949"
-                className="
-                  group
-                  flex
-                  items-center
-                  gap-4
-                  rounded-2xl
-                  border
-                  border-[var(--border)]
-                  p-5
-                  transition-all
-                  duration-300
-                  hover:border-[var(--accent)]
-                "
-              >
-                <span
-                  className="
-                    flex
-                    h-11
-                    w-11
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-[var(--accent)]/10
-                    text-[var(--accent)]
-                  "
-                >
-                  <Phone size={19} />
-                </span>
-
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    Téléphone
-                  </p>
-
-                  <p className="mt-1 text-sm font-semibold">
-                    +229 01 51 37 09 49
-                  </p>
-                </div>
-              </a>
-
-              {/* Localisation */}
+            {submitted && (
               <div
                 className="
-                  flex
-                  items-center
-                  gap-4
-                  rounded-2xl
+                  mt-5
+                  rounded-xl
                   border
-                  border-[var(--border)]
-                  p-5
+                  border-[#1E88E5]/25
+                  bg-[#1E88E5]/5
+                  px-4
+                  py-3
+                  text-[10px]
+                  font-semibold
+                  text-[var(--accent)]
                 "
               >
-                <span
-                  className="
-                    flex
-                    h-11
-                    w-11
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-[var(--accent)]/10
-                    text-[var(--accent)]
-                  "
-                >
-                  <MapPin size={19} />
-                </span>
-
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-                    Localisation
-                  </p>
-
-                  <p className="mt-1 text-sm font-semibold">
-                    Cotonou, Bénin
-                  </p>
-                </div>
+                Votre messagerie va s'ouvrir pour
+                finaliser l'envoi.
               </div>
-
-            </div>
-          </div>
+            )}
+          </form>
         </div>
       </div>
     </section>

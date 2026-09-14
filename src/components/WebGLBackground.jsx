@@ -9,9 +9,9 @@ function WebGLBackground() {
 
     if (!container) return;
 
-    // ==========================================
-    // SCÈNE
-    // ==========================================
+    /* =====================================================
+       SCÈNE
+       ===================================================== */
 
     const scene = new THREE.Scene();
 
@@ -24,9 +24,9 @@ function WebGLBackground() {
 
     camera.position.z = 8;
 
-    // ==========================================
-    // RENDERER
-    // ==========================================
+    /* =====================================================
+       RENDERER
+       ===================================================== */
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -35,7 +35,7 @@ function WebGLBackground() {
     });
 
     renderer.setPixelRatio(
-      Math.min(window.devicePixelRatio, 1.5)
+      Math.min(window.devicePixelRatio, 2)
     );
 
     renderer.setSize(
@@ -43,52 +43,91 @@ function WebGLBackground() {
       window.innerHeight
     );
 
+    renderer.setClearColor(
+      0x000000,
+      0
+    );
+
     renderer.domElement.style.position = "absolute";
     renderer.domElement.style.inset = "0";
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
+    renderer.domElement.style.pointerEvents = "none";
+    renderer.domElement.style.zIndex = "0";
 
     container.appendChild(renderer.domElement);
 
-    // ==========================================
-    // PARTICULES
-    // ==========================================
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
 
-    const isMobile = window.innerWidth < 768;
+    const isMobile =
+      window.innerWidth < 768;
 
-    const particleCount = isMobile ? 450 : 1100;
+    const particleCount = isMobile
+      ? 350
+      : 850;
+
+    /* =====================================================
+       PARTICULES
+       ===================================================== */
 
     const positions = new Float32Array(
       particleCount * 3
     );
 
-    const velocities = new Float32Array(
+    const originalPositions = new Float32Array(
       particleCount * 3
+    );
+
+    const sizes = new Float32Array(
+      particleCount
+    );
+
+    const randomOffsets = new Float32Array(
+      particleCount
     );
 
     for (let i = 0; i < particleCount; i++) {
       const index = i * 3;
 
-      positions[index] =
-        (Math.random() - 0.5) * 22;
+      const radius =
+        Math.random() * 8 + 1;
 
-      positions[index + 1] =
-        (Math.random() - 0.5) * 14;
+      const angle =
+        Math.random() * Math.PI * 2;
 
-      positions[index + 2] =
-        (Math.random() - 0.5) * 14;
+      const vertical =
+        (Math.random() - 0.5) * 9;
 
-      velocities[index] =
-        (Math.random() - 0.5) * 0.0008;
+      const x =
+        Math.cos(angle) *
+        radius *
+        (0.9 + Math.random() * 0.5);
 
-      velocities[index + 1] =
-        Math.random() * 0.001;
+      const y = vertical;
 
-      velocities[index + 2] =
-        (Math.random() - 0.5) * 0.0005;
+      const z =
+        (Math.random() - 0.5) * 6;
+
+      positions[index] = x;
+      positions[index + 1] = y;
+      positions[index + 2] = z;
+
+      originalPositions[index] = x;
+      originalPositions[index + 1] = y;
+      originalPositions[index + 2] = z;
+
+      sizes[i] =
+        0.5 +
+        Math.random() * 1.7;
+
+      randomOffsets[i] =
+        Math.random() * Math.PI * 2;
     }
 
-    const geometry = new THREE.BufferGeometry();
+    const geometry =
+      new THREE.BufferGeometry();
 
     geometry.setAttribute(
       "position",
@@ -98,25 +137,159 @@ function WebGLBackground() {
       )
     );
 
-    const material = new THREE.PointsMaterial({
-      color: 0x1e88e5,
-      size: isMobile ? 0.035 : 0.055,
-      transparent: true,
-      opacity: isMobile ? 0.5 : 0.65,
-      sizeAttenuation: true,
-      depthWrite: false,
-    });
-
-    const particles = new THREE.Points(
-      geometry,
-      material
+    geometry.setAttribute(
+      "aSize",
+      new THREE.BufferAttribute(
+        sizes,
+        1
+      )
     );
+
+    /* =====================================================
+       SHADER
+       ===================================================== */
+
+    const material =
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending:
+          THREE.AdditiveBlending,
+
+        uniforms: {
+          uTime: {
+            value: 0,
+          },
+
+          uOpacity: {
+            value: 0.52,
+          },
+
+          uPixelRatio: {
+            value: Math.min(
+              window.devicePixelRatio,
+              2
+            ),
+          },
+        },
+
+        vertexShader: `
+          attribute float aSize;
+
+          uniform float uTime;
+          uniform float uPixelRatio;
+
+          varying float vAlpha;
+
+          void main() {
+            vec3 transformed = position;
+
+            float movement =
+              uTime * 0.22;
+
+            transformed.x +=
+              sin(
+                uTime * 0.35 +
+                position.y * 0.25
+              ) * 0.16;
+
+            transformed.y +=
+              cos(
+                uTime * 0.28 +
+                position.x * 0.18
+              ) * 0.12;
+
+            transformed.z +=
+              sin(
+                uTime * 0.22 +
+                position.x * 0.15 +
+                position.y * 0.1
+              ) * 0.08;
+
+            vec4 modelPosition =
+              modelViewMatrix *
+              vec4(
+                transformed,
+                1.0
+              );
+
+            gl_Position =
+              projectionMatrix *
+              modelPosition;
+
+            gl_PointSize =
+              aSize *
+              uPixelRatio *
+              (85.0 / -modelPosition.z);
+
+            vAlpha =
+              smoothstep(
+                9.0,
+                1.0,
+                -modelPosition.z
+              );
+          }
+        `,
+
+        fragmentShader: `
+          varying float vAlpha;
+
+          void main() {
+            vec2 uv =
+              gl_PointCoord -
+              vec2(0.5);
+
+            float distanceFromCenter =
+              length(uv);
+
+            float circle =
+              1.0 -
+              smoothstep(
+                0.15,
+                0.5,
+                distanceFromCenter
+              );
+
+            vec3 blue =
+              vec3(
+                0.117,
+                0.533,
+                0.898
+              );
+
+            gl_FragColor =
+              vec4(
+                blue,
+                circle *
+                vAlpha *
+                0.7
+              );
+          }
+        `,
+      });
+
+    const particles =
+      new THREE.Points(
+        geometry,
+        material
+      );
 
     scene.add(particles);
 
-    // ==========================================
-    // SOURIS
-    // ==========================================
+    /* =====================================================
+       GROUPE DE PROFONDEUR
+       ===================================================== */
+
+    const depthGroup =
+      new THREE.Group();
+
+    depthGroup.add(particles);
+
+    scene.add(depthGroup);
+
+    /* =====================================================
+       SOURIS
+       ===================================================== */
 
     const mouse = {
       x: 0,
@@ -130,31 +303,72 @@ function WebGLBackground() {
 
     const handleMouseMove = (event) => {
       targetMouse.x =
-        (event.clientX / window.innerWidth) * 2 - 1;
+        event.clientX /
+          window.innerWidth -
+        0.5;
 
       targetMouse.y =
-        -(event.clientY / window.innerHeight) * 2 + 1;
+        event.clientY /
+          window.innerHeight -
+        0.5;
     };
 
     window.addEventListener(
       "mousemove",
-      handleMouseMove
+      handleMouseMove,
+      {
+        passive: true,
+      }
     );
 
-    // ==========================================
-    // RESIZE
-    // ==========================================
+    /* =====================================================
+       SCROLL
+       ===================================================== */
+
+    let scrollValue = 0;
+    let targetScroll = 0;
+
+    const handleScroll = () => {
+      targetScroll =
+        window.scrollY;
+    };
+
+    window.addEventListener(
+      "scroll",
+      handleScroll,
+      {
+        passive: true,
+      }
+    );
+
+    /* =====================================================
+       RESIZE
+       ===================================================== */
 
     const handleResize = () => {
       camera.aspect =
-        window.innerWidth / window.innerHeight;
+        window.innerWidth /
+        window.innerHeight;
 
       camera.updateProjectionMatrix();
+
+      renderer.setPixelRatio(
+        Math.min(
+          window.devicePixelRatio,
+          2
+        )
+      );
 
       renderer.setSize(
         window.innerWidth,
         window.innerHeight
       );
+
+      material.uniforms.uPixelRatio.value =
+        Math.min(
+          window.devicePixelRatio,
+          2
+        );
     };
 
     window.addEventListener(
@@ -162,89 +376,124 @@ function WebGLBackground() {
       handleResize
     );
 
-    // ==========================================
-    // ANIMATION
-    // ==========================================
+    /* =====================================================
+       ANIMATION
+       ===================================================== */
+
+    const clock =
+      new THREE.Clock();
 
     let animationFrame;
-    let time = 0;
 
     const animate = () => {
       animationFrame =
-        requestAnimationFrame(animate);
+        requestAnimationFrame(
+          animate
+        );
 
-      time += 0.001;
+      const elapsed =
+        clock.getElapsedTime();
 
-      // Suivi fluide de la souris
+      /* -------------------------------
+         Lissage souris
+      -------------------------------- */
+
       mouse.x +=
-        (targetMouse.x - mouse.x) * 0.025;
+        (targetMouse.x -
+          mouse.x) *
+        0.045;
 
       mouse.y +=
-        (targetMouse.y - mouse.y) * 0.025;
+        (targetMouse.y -
+          mouse.y) *
+        0.045;
 
-      // Rotation générale
-      particles.rotation.y += 0.00045;
-      particles.rotation.x += 0.00012;
+      /* -------------------------------
+         Lissage scroll
+      -------------------------------- */
 
-      // Mouvement global lié à la souris
-      particles.position.x =
-        mouse.x * 0.35;
+      scrollValue +=
+        (targetScroll -
+          scrollValue) *
+        0.04;
+
+      /* -------------------------------
+         Souris → profondeur
+      -------------------------------- */
+
+      depthGroup.rotation.y =
+        mouse.x * 0.12;
+
+      depthGroup.rotation.x =
+        mouse.y * 0.08;
+
+      depthGroup.position.x =
+        mouse.x * 0.45;
+
+      depthGroup.position.y =
+        -mouse.y * 0.3;
+
+      /* -------------------------------
+         Rotation lente globale
+      -------------------------------- */
+
+      particles.rotation.y =
+        elapsed * 0.025;
+
+      particles.rotation.x =
+        Math.sin(
+          elapsed * 0.12
+        ) * 0.025;
+
+      /* -------------------------------
+         Réaction au scroll
+      -------------------------------- */
 
       particles.position.y =
-        mouse.y * 0.25;
+        -scrollValue * 0.00045;
 
-      // Mouvement organique très léger
       particles.position.z =
-        Math.sin(time) * 0.15;
+        Math.sin(
+          elapsed * 0.15
+        ) *
+        0.08;
 
-      // Animation individuelle des particules
-      const particlePositions =
-        geometry.attributes.position.array;
+      /* -------------------------------
+         Respiration de l'opacité
+      -------------------------------- */
 
-      for (let i = 0; i < particleCount; i++) {
-        const index = i * 3;
+      material.uniforms.uOpacity.value =
+        0.44 +
+        Math.sin(
+          elapsed * 0.6
+        ) *
+          0.05;
 
-        particlePositions[index] +=
-          velocities[index];
-
-        particlePositions[index + 1] +=
-          velocities[index + 1];
-
-        particlePositions[index + 2] +=
-          velocities[index + 2];
-
-        // Replacer les particules lorsqu'elles sortent
-        if (particlePositions[index + 1] > 7) {
-          particlePositions[index + 1] = -7;
-        }
-
-        if (particlePositions[index] > 11) {
-          particlePositions[index] = -11;
-        }
-
-        if (particlePositions[index] < -11) {
-          particlePositions[index] = 11;
-        }
-      }
-
-      geometry.attributes.position.needsUpdate =
-        true;
-
-      renderer.render(scene, camera);
+      renderer.render(
+        scene,
+        camera
+      );
     };
 
     animate();
 
-    // ==========================================
-    // NETTOYAGE
-    // ==========================================
+    /* =====================================================
+       CLEANUP
+       ===================================================== */
 
     return () => {
-      cancelAnimationFrame(animationFrame);
+      cancelAnimationFrame(
+        animationFrame
+      );
 
       window.removeEventListener(
         "mousemove",
         handleMouseMove
+      );
+
+      window.removeEventListener(
+        "scroll",
+        handleScroll
       );
 
       window.removeEventListener(
@@ -256,8 +505,13 @@ function WebGLBackground() {
       material.dispose();
       renderer.dispose();
 
-      if (renderer.domElement.parentNode) {
-        renderer.domElement.parentNode.removeChild(
+      if (
+        renderer.domElement &&
+        container.contains(
+          renderer.domElement
+        )
+      ) {
+        container.removeChild(
           renderer.domElement
         );
       }
@@ -270,7 +524,8 @@ function WebGLBackground() {
       aria-hidden="true"
       className="
         pointer-events-none
-        fixed inset-0
+        fixed
+        inset-0
         z-0
         overflow-hidden
       "

@@ -1,6 +1,13 @@
 import { ArrowUp } from "lucide-react";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 function Footer() {
+  const footerRef = useRef(null);
+
   const socialLinks = [
     {
       name: "Facebook",
@@ -16,6 +23,39 @@ function Footer() {
     },
   ];
 
+  useEffect(() => {
+    const footer = footerRef.current;
+
+    if (!footer) return;
+
+    const elements = footer.querySelectorAll(".footer-reveal");
+
+    const animation = gsap.fromTo(
+      elements,
+      {
+        opacity: 0,
+        y: 25,
+      },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        stagger: 0.08,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: footer,
+          start: "top 90%",
+          once: true,
+        },
+      }
+    );
+
+    return () => {
+      animation.scrollTrigger?.kill();
+      animation.kill();
+    };
+  }, []);
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -26,7 +66,10 @@ function Footer() {
   return (
     <footer
       id="footer"
+      ref={footerRef}
       className="
+        relative
+        overflow-hidden
         border-t
         border-[var(--border)]
         px-6
@@ -35,10 +78,26 @@ function Footer() {
         md:py-20
       "
     >
-      <div className="mx-auto max-w-7xl">
+      {/* Halo décoratif */}
+      <div
+        className="
+          pointer-events-none
+          absolute
+          left-1/2
+          top-0
+          h-72
+          w-72
+          -translate-x-1/2
+          -translate-y-1/2
+          rounded-full
+          bg-[var(--accent)]/10
+          blur-[100px]
+        "
+      />
 
+      <div className="relative mx-auto max-w-7xl">
         {/* Grande phrase */}
-        <div className="max-w-4xl">
+        <div className="footer-reveal max-w-4xl">
           <p className="mb-5 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--accent)]">
             Construisons quelque chose de remarquable
           </p>
@@ -53,14 +112,16 @@ function Footer() {
         </div>
 
         {/* Email */}
-        <div className="mt-10">
+        <div className="footer-reveal mt-10">
           <a
             href="mailto:josenahounme@gmail.com"
             className="
+              inline-block
               text-sm
               font-semibold
-              transition-colors
+              transition-all
               duration-300
+              hover:translate-x-1
               hover:text-[var(--accent)]
               md:text-base
             "
@@ -85,11 +146,18 @@ function Footer() {
           "
         >
           {/* Logo + copyright */}
-          <div>
+          <div className="footer-reveal">
             <img
               src="/images/logo.png"
               alt="Logo José Nahounmé"
-              className="h-8 w-auto object-contain"
+              className="
+                h-8
+                w-auto
+                object-contain
+                transition-transform
+                duration-300
+                hover:scale-[1.03]
+              "
             />
 
             <p className="mt-3 text-xs text-[var(--text-secondary)]">
@@ -98,7 +166,7 @@ function Footer() {
           </div>
 
           {/* Réseaux sociaux */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="footer-reveal flex flex-wrap items-center gap-2">
             {socialLinks.map((social) => (
               <a
                 key={social.name}
@@ -107,16 +175,19 @@ function Footer() {
                 rel="noreferrer"
                 className="
                   rounded-full
-                  border border-[var(--border)]
-                  px-4 py-2
+                  border
+                  border-[var(--border)]
+                  px-4
+                  py-2
                   text-xs
                   font-semibold
                   text-[var(--text-secondary)]
                   transition-all
                   duration-300
-                  hover:border-[var(--accent)]
-                  hover:text-[var(--accent)]
                   hover:-translate-y-0.5
+                  hover:border-[var(--accent)]
+                  hover:bg-[var(--accent)]/5
+                  hover:text-[var(--accent)]
                 "
               >
                 {social.name}
@@ -130,6 +201,7 @@ function Footer() {
             onClick={scrollToTop}
             aria-label="Retour en haut"
             className="
+              footer-reveal
               flex
               h-11
               w-11
@@ -142,6 +214,7 @@ function Footer() {
               duration-300
               hover:-translate-y-1
               hover:border-[var(--accent)]
+              hover:bg-[var(--accent)]/5
               hover:text-[var(--accent)]
             "
           >

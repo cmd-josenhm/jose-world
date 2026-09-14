@@ -1,155 +1,283 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function DiscoverBox({ onOpen }) {
-  const [opening, setOpening] = useState(false);
+  const sceneRef = useRef(null);
+  const frameRef = useRef(null);
+  const openTimeoutRef = useRef(null);
+
+  const [isHovered, setIsHovered] = useState(false);
+  const [isOpening, setIsOpening] = useState(false);
+  const [mousePosition, setMousePosition] = useState({
+    x: 0,
+    y: 0,
+  });
+
+  /* ========================================================
+     INTERACTION SOURIS
+     ======================================================== */
+
+  useEffect(() => {
+    const scene = sceneRef.current;
+
+    if (!scene) return;
+
+    const handleMouseMove = (event) => {
+      const rect = scene.getBoundingClientRect();
+
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const x = (event.clientX - centerX) / rect.width;
+      const y = (event.clientY - centerY) / rect.height;
+
+      setMousePosition({
+        x: Math.max(-1, Math.min(1, x)),
+        y: Math.max(-1, Math.min(1, y)),
+      });
+    };
+
+    const handleMouseLeave = () => {
+      setMousePosition({
+        x: 0,
+        y: 0,
+      });
+
+      setIsHovered(false);
+    };
+
+    scene.addEventListener(
+      "mousemove",
+      handleMouseMove
+    );
+
+    scene.addEventListener(
+      "mouseleave",
+      handleMouseLeave
+    );
+
+    return () => {
+      scene.removeEventListener(
+        "mousemove",
+        handleMouseMove
+      );
+
+      scene.removeEventListener(
+        "mouseleave",
+        handleMouseLeave
+      );
+
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current);
+      }
+    };
+  }, []);
+
+  /* ========================================================
+     OUVERTURE
+     ======================================================== */
 
   const handleOpen = () => {
-    if (opening) return;
+    if (isOpening) return;
 
-    setOpening(true);
+    setIsOpening(true);
 
-    // Laisser l'animation se jouer avant d'afficher la page principale
-    setTimeout(() => {
+    openTimeoutRef.current = window.setTimeout(() => {
       onOpen();
     }, 1200);
   };
 
+  useEffect(() => {
+    return () => {
+      if (openTimeoutRef.current) {
+        window.clearTimeout(openTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  /* ========================================================
+     TRANSFORMATION DYNAMIQUE
+     ======================================================== */
+
+  const rotateX = mousePosition.y * -7;
+  const rotateY = mousePosition.x * 9;
+
+  const translateX = mousePosition.x * 5;
+  const translateY = mousePosition.y * 4;
+
   return (
-    <div className="flex flex-col items-center">
+    <div className="discover-wrapper">
 
-      {/* Zone interactive */}
-      <button
-        type="button"
-        onClick={handleOpen}
-        disabled={opening}
-        aria-label="Ouvrir la galerie Jose World"
-        className="
-          group
-          relative
-          flex
-          flex-col
-          items-center
-          focus:outline-none
-        "
+      {/* ====================================================
+          HALO
+      ==================================================== */}
+
+      <div
+        className={`discover-halo ${
+          isHovered
+            ? "discover-halo-active"
+            : ""
+        }`}
+      />
+
+      {/* ====================================================
+          PETITES PARTICULES
+      ==================================================== */}
+
+      <div
+        className="discover-floating-particles"
+        aria-hidden="true"
       >
-        {/* Explosion */}
-        {opening && (
-          <div className="pointer-events-none absolute inset-1/2 z-20">
-            <span className="firework spark-1" />
-            <span className="firework spark-2" />
-            <span className="firework spark-3" />
-            <span className="firework spark-4" />
-            <span className="firework spark-5" />
-            <span className="firework spark-6" />
-            <span className="firework spark-7" />
-            <span className="firework spark-8" />
-            <span className="firework spark-9" />
-            <span className="firework spark-10" />
-          </div>
-        )}
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+      </div>
 
-        {/* Boîte */}
-        <div
-          className={`
-            relative
-            h-24
-            w-28
-            transition-all
-            duration-700
-            ${opening ? "translate-y-3 scale-95" : "group-hover:-translate-y-1"}
-          `}
+      {/* ====================================================
+          SCÈNE
+      ==================================================== */}
+
+      <div
+        ref={sceneRef}
+        className={`
+          discover-scene
+          ${isHovered ? "is-hovered" : ""}
+          ${isOpening ? "is-opening" : ""}
+        `}
+        style={{
+          "--rotate-x": `${rotateX}deg`,
+          "--rotate-y": `${rotateY}deg`,
+          "--translate-x": `${translateX}px`,
+          "--translate-y": `${translateY}px`,
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+      >
+
+        {/* ==================================================
+            OMBRE
+        ================================================== */}
+
+        <div className="discover-shadow" />
+
+        {/* ==================================================
+            GLOW
+        ================================================== */}
+
+        <div className="box-glow" />
+
+        {/* ==================================================
+            BOX
+        ================================================== */}
+
+        <button
+          type="button"
+          className="discover-object"
+          onClick={handleOpen}
+          aria-label="Découvrir le portfolio"
+          disabled={isOpening}
         >
+
+          {/* Lumière interne */}
+
+          <span className="box-light" />
+
           {/* Corps */}
-          <div
-            className="
-              absolute
-              bottom-0
-              left-1/2
-              h-16
-              w-28
-              -translate-x-1/2
-              rounded-b-xl
-              border-2
-              border-[var(--accent)]
-              bg-[var(--bg-secondary)]
-            "
-          >
-            {/* Ruban vertical */}
-            <div
-              className="
-                absolute
-                left-1/2
-                top-0
-                h-full
-                w-4
-                -translate-x-1/2
-                bg-[var(--accent)]
-              "
-            />
-          </div>
+
+          <span className="box-body">
+
+            <span className="box-face" />
+
+            <span className="box-band" />
+
+            <span className="box-band-vertical" />
+
+            <span className="box-highlight" />
+
+          </span>
 
           {/* Couvercle */}
-          <div
-            className={`
-              absolute
-              left-1/2
-              top-1
-              z-10
-              h-7
-              w-32
-              -translate-x-1/2
-              rounded-md
-              border-2
-              border-[var(--accent)]
-              bg-[var(--bg-secondary)]
-              transition-all
-              duration-700
-              ease-out
-              ${
-                opening
-                  ? "-translate-y-16 rotate-[-18deg] opacity-0"
-                  : "group-hover:-translate-y-1"
-              }
-            `}
-          >
-            {/* Ruban */}
-            <div
-              className="
-                absolute
-                left-1/2
-                top-0
-                h-full
-                w-4
-                -translate-x-1/2
-                bg-[var(--accent)]
-              "
-            />
-          </div>
+
+          <span className="box-lid">
+
+            <span className="box-lid-top" />
+
+            <span className="box-lid-edge" />
+
+          </span>
+
+        </button>
+
+        {/* ==================================================
+            EXPLOSION
+        ================================================== */}
+
+        <div
+          className="discover-fireworks"
+          aria-hidden="true"
+        >
+          {Array.from(
+            { length: 14 },
+            (_, index) => (
+              <span
+                key={index}
+                style={{
+                  "--firework-index": index,
+                }}
+              />
+            )
+          )}
         </div>
 
-        {/* Texte */}
-        <span
-          className="
-            mt-6
-            rounded-full
-            border
-            border-[var(--accent)]
-            px-8
-            py-4
-            text-sm
-            font-semibold
-            uppercase
-            tracking-[0.2em]
-            transition-all
-            duration-500
-            group-hover:scale-105
-            group-hover:bg-[var(--accent)]
-            group-hover:text-white
-          "
+        {/* ==================================================
+            FLARE CENTRAL
+        ================================================== */}
+
+        <div
+          className="discover-flare"
+          aria-hidden="true"
+        />
+
+      </div>
+
+      {/* ====================================================
+          CONTENU
+      ==================================================== */}
+
+      <div className="discover-content">
+
+        <p className="discover-kicker">
+          ENTRER DANS MON UNIVERS
+        </p>
+
+        <button
+          type="button"
+          className={`
+            discover-button
+            ${isOpening ? "is-loading" : ""}
+          `}
+          onClick={handleOpen}
+          disabled={isOpening}
         >
-          Découvrir
-        </span>
-      </button>
+          <span>
+            {isOpening
+              ? "OUVERTURE..."
+              : "DÉCOUVRIR"}
+          </span>
+
+          <span className="discover-arrow">
+            ↗
+          </span>
+        </button>
+
+        <p className="discover-hint">
+          {isOpening
+            ? "Prépare-toi à entrer dans Jose World."
+            : "Clique sur la boîte pour ouvrir"}
+        </p>
+
+      </div>
     </div>
   );
 }

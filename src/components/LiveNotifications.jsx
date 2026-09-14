@@ -21,7 +21,7 @@ const notifications = [
     action: "vient de découvrir un projet",
     time: "il y a 16 minutes",
   },
-    {
+  {
     name: "Lionel T.",
     action: "vient d'envoyer un projet",
     time: "il y a 17 minutes",
@@ -36,10 +36,10 @@ function LiveNotifications() {
     let notificationIndex = 0;
     let showTimer;
     let hideTimer;
+    let initialTimer;
 
     const showNextNotification = () => {
-      const notification =
-        notifications[notificationIndex];
+      const notification = notifications[notificationIndex];
 
       setCurrentNotification(notification);
 
@@ -48,15 +48,14 @@ function LiveNotifications() {
 
         showTimer = setTimeout(() => {
           notificationIndex =
-            (notificationIndex + 1) %
-            notifications.length;
+            (notificationIndex + 1) % notifications.length;
 
           showNextNotification();
         }, 2500);
       }, 4500);
     };
 
-    const initialTimer = setTimeout(() => {
+    initialTimer = setTimeout(() => {
       showNextNotification();
     }, 2500);
 
@@ -86,6 +85,7 @@ function LiveNotifications() {
     >
       <div
         className="
+          group
           flex
           items-center
           gap-3
@@ -97,11 +97,17 @@ function LiveNotifications() {
           py-3
           shadow-2xl
           backdrop-blur-xl
+          transition-all
+          duration-300
+          hover:-translate-y-1
+          hover:border-[var(--accent)]/30
+          hover:shadow-[0_15px_45px_rgba(0,0,0,0.25)]
         "
       >
         {/* Indicateur */}
         <span
           className="
+            relative
             h-2.5
             w-2.5
             shrink-0
@@ -109,11 +115,23 @@ function LiveNotifications() {
             bg-[var(--accent)]
             shadow-[0_0_12px_rgba(30,136,229,0.8)]
           "
-        />
+        >
+          <span
+            className="
+              absolute
+              inset-0
+              animate-ping
+              rounded-full
+              bg-[var(--accent)]
+              opacity-40
+            "
+          />
+        </span>
 
+        {/* Contenu */}
         <div className="min-w-0">
           <p className="text-xs leading-5">
-            <span className="font-extrabold">
+            <span className="font-extrabold text-[var(--text-primary)]">
               {currentNotification.name}
             </span>{" "}
             <span className="text-[var(--text-secondary)]">
